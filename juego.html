@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+        }
+        #header {
+            width: 100%;
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        #menu {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        #menu a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: #666;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        .card {
+            background: #ae5656;
+            height: 150px;
+            width: 150px;
+            display: inline-block;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            opacity: 0.5;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        .card img {
+            height: 100%;
+            width: 100%;
+            border-radius: 10px;
+            position: absolute;
+            backface-visibility: hidden;
+        }
+        .card .back {
+            transform: rotateY(180deg);
+            background: pink; /* Cambiar a color rosa */
+            opacity: 1;
+        }
+        .card.flipped {
+            opacity: 1;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+            transform: rotateY(180deg);
+        }
+        #reset {
+            padding: 10px 20px;
+            font-size: 20px;
+            background: #ff6347;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>Memorama de Animales</h1>
+    </div>
+    <div id="menu">
+        <a href="#">Más juegos</a>
+        <a href="#">Sobre</a>
+        <a href="#">Contacto</a>
+    </div>
+    <div id="game"></div>
+    <button id="reset">Reiniciar</button>
+
+    <script>
+        var flipSound = new Audio('flip.wav');
+        var images = [
+            '1.png',
+            '2.png',
+            '3.png',
+            '4.png',
+            '5.png',
+            '6.png',
+            '7.png',
+            '8.png'
+        ];
+
+        var game = document.getElementById('game');
+        var cards = [];
+        var flippedCards = [];
+
+        images = images.concat(images);
+        images.sort(function() { return 0.5 - Math.random() });
+
+        for (var i = 0; i < images.length; i++) {
+            var card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.item = images[i];
+            card.innerHTML = '<img class="front" src="https://i.imgur.com/RR1EqHJ.png" /><img class="back" src="Juego/memorama/animales/' + images[i] + '" />';
+            card.addEventListener('click', flipCard);
+            game.appendChild(card);
+            cards.push(card);
+        }
+
+        function flipCard() {
+            if (flippedCards.length === 2 || this.classList.contains('flipped')) {
+                return;
+            }
+            flipSound.play();
+            this.classList.add('flipped');
+            flippedCards.push(this);
+            if (flippedCards.length === 2) {
+                setTimeout(checkMatch, 1000);
+            }
+        }
+
+        function checkMatch() {
+            var isMatch = flippedCards[0].dataset.item === flippedCards[1].dataset.item;
+            if (isMatch) {
+                flippedCards.forEach(function(card) {
+                    card.classList.add('matched');
+                });
+            } else {
+                flippedCards.forEach(function(card) {
+                    card.classList.remove('flipped');
+                });
+            }
+            flippedCards = [];
+        }
+
+        document.getElementById('reset').addEventListener('click', function() {
+            cards.forEach(function(card) {
+                card.classList.remove('flipped', 'matched');
+            });
+            flippedCards = [];
+        });
+    </script>
+</body>
+</html>
